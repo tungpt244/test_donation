@@ -6,7 +6,6 @@ import { fileURLToPath } from 'url'
 import cookieParser from 'cookie-parser'
 import logger from 'morgan'
 import { useRoute } from './routes/index.mjs'
-import connectDB from './config/index.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -17,7 +16,6 @@ app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(__dirname + '/public'))
 
-connectDB()
 useRoute(app)
 
 // catch 404 and forward to error handler
