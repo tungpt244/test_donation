@@ -6,6 +6,6 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-RUN yarn 
+RUN npm install 
 COPY . .
-CMD [ "yarn", "start" ]
+CMD [ "node", "src/app.mjs" ]
