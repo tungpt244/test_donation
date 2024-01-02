@@ -13,7 +13,7 @@ router.post('/', async function (req, res, next) {
     const result = await useDonation({ _site: site, _name: name, _message: message, _loop: loop })
     res.json(result)
   } catch (error) {
-    res.json(error)
+    res.status(500).json(error)
   }
 })
 
