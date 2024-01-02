@@ -4,7 +4,14 @@ import puppeteer from 'puppeteer'
 
 export const useDonation = async ({ _site, _name, _message, _loop }) => {
   // Launch the browser and open a new blank page
-  const browser = await puppeteer.launch({ headless: true })
+  const browser = await puppeteer
+    .launch({
+      headless: true,
+      args: ['--disable-setuid-sandbox', '--no-sandbox', '--single-process', '--no-zygote'],
+    })
+    .catch(error => {
+      console.log(error)
+    })
   const page = await browser.newPage()
 
   // Navigate the page to a URL
