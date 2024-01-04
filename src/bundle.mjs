@@ -3,21 +3,29 @@
 import puppeteer from 'puppeteer'
 
 export const useDonation = async ({ _site, _name, _message, _loop }) => {
-  // Launch the browser and open a new blank page
-  const browser = await puppeteer
-    .launch({
-      headless: true,
-      args: ['--disable-setuid-sandbox', '--no-sandbox', '--single-process', '--no-zygote'],
-      executablePath:
-        process.env.NODE_ENV === 'production' ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(),
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  const page = await browser.newPage()
+  if (!_site) return { success: false, message: 'điền hộ cái site vào' }
+  if (!_name) return { success: false, message: 'điền hộ cái name vào' }
+  if (!_message) return { success: false, message: 'điền hộ cái message vào' }
+  if (!_loop) return { success: false, message: 'điền hộ cái loop vào' }
+  if (Number(_loop) > 8) {
+    return { success: false, message: 'loop ít thôi, cpu 100%' }
+  }
 
   // Navigate the page to a URL
   const loop = async () => {
+    // Launch the browser and open a new blank page
+    const browser = await puppeteer
+      .launch({
+        headless: true,
+        args: ['--disable-setuid-sandbox', '--no-sandbox', '--single-process', '--no-zygote'],
+        executablePath:
+          process.env.NODE_ENV === 'production' ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(),
+      })
+      .catch(error => {
+        console.log(error)
+      })
+
+    const page = await browser.newPage()
     await page.goto(_site || 'https://j97.tungpt.me/', {
       waitUntil: 'networkidle0',
     })
@@ -83,17 +91,19 @@ export const useDonation = async ({ _site, _name, _message, _loop }) => {
     await button4?.click()
 
     await page.waitForNavigation()
+
+    await browser.close()
   }
 
   if (_loop) {
-    for (let i = 0; i < _loop; i++) {
-      await loop()
-    }
+    await Promise.all(
+      [...Array(_loop ?? 1)].map(async () => {
+        await loop()
+      })
+    )
   } else {
     await loop()
   }
-
-  await browser.close()
 
   return {
     success: true,
